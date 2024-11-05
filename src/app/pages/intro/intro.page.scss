@@ -1,0 +1,18 @@
+.contenedor {
+    margin-top: 100px; /* Ajusta el margen superior según sea necesario */
+    text-align: center; /* Centra el contenido dentro del contenedor */
+}
+
+.contenedor img {
+    border-radius: 25px; /* Aplica bordes redondeados al GIF */
+    border: solid 2px rgb(0, 0, 0); /* Agrega un borde alrededor del GIF */
+    width: 60%; /* Ajusta el ancho al 50% del contenedor */
+    height: auto; /* Mantiene la proporción de la imagen */
+}
+ion-content{
+    --background: transparent;
+    background-image: url('../../../assets/img/qrgif.gif');
+    background-size: cover; 
+    background-repeat: repeat; 
+    background-position: center;
+}

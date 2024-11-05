@@ -1,0 +1,26 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="custom-toolbar" color="dark">
+    <ion-menu-button slot="start"></ion-menu-button>
+    <ion-title>QR profesor</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="center-content">
+  <div class="qr-wrapper">
+    <h2>Tiempo restante: {{ tiempoRestante }} segundos</h2>
+    
+    <qr-code  
+      [value]="valorQR" 
+      size="400" 
+      errorCorrectionLevel="M">
+    </qr-code>
+
+    <div style="display: none;">{{ valorQR }}</div>
+
+    <div *ngIf="mensajeEstado" class="estado-mensaje">{{ mensajeEstado }}</div>
+  </div>
+
+  <ion-button expand="full" (click)="redirigir()" class="bottom-button">
+    Ir a lista
+  </ion-button>
+</ion-content>

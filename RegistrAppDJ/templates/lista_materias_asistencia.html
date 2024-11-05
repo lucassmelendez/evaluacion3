@@ -1,0 +1,33 @@
+<h1>Lista de Asistencias por Materia</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Materia</th>
+            <th>Alumno</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for materia, alumnos_asistencias in asistencia_por_materia.items %}
+            {% for alumno, asistencias in alumnos_asistencias.items %}
+                {% for asistencia in asistencias %}
+                    <tr>
+                        <td>{{ materia.nombre }}</td>
+                        <td>{{ alumno.nombre }} {{ alumno.apellido }}</td>
+                        <td>{{ asistencia.fecha }}</td>
+                        <td>{{ 'Presente' if asistencia.presente else 'Ausente' }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td>{{ materia.nombre }}</td>
+                        <td>{{ alumno.nombre }} {{ alumno.apellido }}</td>
+                        <td>No hay registros de asistencia</td>
+                        <td></td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+    </tbody>
+</table>

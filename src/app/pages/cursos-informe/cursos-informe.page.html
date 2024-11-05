@@ -1,0 +1,19 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="custom-toolbar" color="dark">
+    <ion-menu-button slot="start"></ion-menu-button>
+    <ion-title>Informes de los cursos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="background-container">
+    <div class="button-container">
+      <!-- Iterar sobre las materias del profesor -->
+      <div *ngFor="let materia of materiasDelProfesor">
+        <ion-button expand="block" routerLink="/informe" class="custom-button">
+          {{ materia.nombre }} <!-- Muestra el nombre de la materia -->
+        </ion-button>
+      </div>
+    </div>
+  </div>
+</ion-content>

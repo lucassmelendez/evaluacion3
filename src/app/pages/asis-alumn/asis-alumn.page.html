@@ -1,0 +1,34 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="custom-toolbar" color="dark">
+    <ion-menu-button slot="start"></ion-menu-button>
+    <ion-title>Asistencia de Estudiantes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<!--
+<ion-content [fullscreen]="true">
+  <div class="attendance-container">
+    <ion-list>
+      <ion-item *ngFor="let student of students">
+        <ion-label class="student-info">
+          <h2>{{ student.name }}</h2>
+          <p>Asistencia: {{ student.attendance }}%</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>
+DESACTIVADO TEMPORALMENTE-->
+
+<ion-content>
+  <div>
+    <h2>Lista</h2>
+    <ion-list>
+      <ion-item *ngFor="let alum of lista_alumno">
+        {{alum.nombre}} {{alum.apellido}}
+        <ion-button (click)="eliminar(alum.id)"> Eliminar</ion-button>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content> 

@@ -1,0 +1,23 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="custom-toolbar" color="dark">
+    <ion-menu-button slot="start"></ion-menu-button>
+    <ion-title>Asistencia de Estudiantes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="attendance-container">
+    <ion-list>
+      <ion-item *ngFor="let student of students">
+        <ion-checkbox (ionChange)="toggleAttendance(student, $event)" [checked]="student.presente"></ion-checkbox>
+        <ion-label class="student-info">
+          <h2>{{ student.nombre }} {{ student.apellido }}</h2>
+          <p>Asistencia: {{ student.asistencia }} de {{ totalClases }} ({{ getAttendancePercentage(student.asistencia) }})</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+    <ion-button expand="full" (click)="confirmarAsistencia()">
+      Confirmar Asistencia
+    </ion-button>
+  </div>
+</ion-content>

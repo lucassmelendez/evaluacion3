@@ -1,0 +1,31 @@
+.center-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 16px;
+}
+
+.center-image {
+  max-width: 100%;
+  height: auto;
+}
+
+.bottom-button {
+  position: absolute;
+  bottom: 16px;
+  width: 90%;
+  --background: #ffd000;
+  --color: rgb(0, 0, 0);
+  font-size: 20px;
+  padding: 15px;
+  width: 100%; 
+  box-sizing: border-box;
+  border-radius: 4px; 
+  transition: background-color 0.3s; 
+
+  &:hover {
+    --background: #fff700;  
+  }
+}

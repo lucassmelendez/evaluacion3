@@ -1,0 +1,21 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="custom-toolbar" color="dark">
+    <ion-menu-button slot="start"></ion-menu-button>
+    <ion-title>Asistencias por Materia</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let materia of materias">
+      <h3>{{ materia.nombre }}</h3>
+      <div *ngIf="materia.asistenciasPorAlumno && materia.asistenciasPorAlumno.length > 0">
+        <p>Días Presente: {{ getAttendanceCount(materia.asistenciasPorAlumno) }}</p>
+        <p>Porcentaje de Asistencia: {{ getAttendancePercentage(materia.asistenciasPorAlumno) }}%</p>
+      </div>
+      <p *ngIf="materia.asistenciasPorAlumno && materia.asistenciasPorAlumno.length === 0">
+        No hay asistencias registradas.
+      </p>
+    </ion-item>
+  </ion-list>
+</ion-content>

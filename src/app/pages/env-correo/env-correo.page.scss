@@ -1,0 +1,74 @@
+ion-header{
+    ion-title{
+        filter: opacity(0.8);
+        text-align: center;
+        color:black;
+    }
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;  
+    position: relative; 
+    z-index: 1;   
+}
+  
+.custom-button {
+    --background: #ffd000;
+    --color: rgb(0, 0, 0);
+    font-size: 20px;
+    padding: 15px;
+    width: 100%; 
+    flex: 0 1 120px; 
+    box-sizing: border-box;
+    border-radius: 4px; 
+    transition: background-color 0.3s; 
+    
+    
+    &:hover {
+        --background: #fff700;  
+    }
+}
+  
+.background-container {
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; 
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+  
+.background-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../../../assets/img/QRfondo.png');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.2; 
+}
+ion-card-title{
+    text-align: center;
+    font-weight: bold;
+    font-size: 35px;
+  }
+  
+ion-card{
+    background-color: rgba(255, 255, 255, 0.8);
+    height: auto;
+    width: 90%; 
+    color: black;
+    border-radius: 40px;
+    margin: 0 auto;
+    align-content: center;
+}

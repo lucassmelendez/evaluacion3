@@ -1,0 +1,36 @@
+<body>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title class="colorlogin">RegistrAPP</ion-card-title>
+    </ion-card-header>
+    <br>
+    <ion-card-content>
+      <!-- Input para el correo -->
+      <ion-item>
+        <ion-icon slot="start" color="black" size="large" name="mail"></ion-icon>
+        <ion-label position="floating" class="label-texto">Correo</ion-label>
+        <ion-input [(ngModel)]="alumno.correo" type="email" fill="outline"></ion-input>
+      </ion-item>
+      <br>
+
+      <!-- Input para la contraseña -->
+      <ion-item>
+        <ion-icon slot="start" color="black" size="large" name="lock-closed"></ion-icon>
+        <ion-label position="floating" class="label-texto">Contraseña</ion-label>
+        <ion-input [(ngModel)]="alumno.password" type="password" fill="outline"></ion-input>
+      </ion-item>
+      <br>
+
+      <!-- Botón para iniciar sesión -->
+      <ion-button (click)="validar()" size="block" color="warning">Iniciar</ion-button>
+
+      <!-- Enlaces para registrarse o recuperar contraseña -->
+      <p class="registro">
+        No tienes una cuenta? <a href="/register" class="enlace-recuperacion">Regístrate</a>
+      </p>
+      <p class="registro">
+        <a href="/env-correo" class="enlace-recuperacion">¿Olvidaste tu contraseña?</a>
+      </p>
+    </ion-card-content>
+  </ion-card>
+</body>

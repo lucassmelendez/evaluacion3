@@ -1,0 +1,16 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>CRUD FireBase</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <div style="padding: 20px;">
+    <h2>Grabar Persona</h2>
+    <ion-input [(ngModel)]="persona.nombre" label="Nombre" placeholder="Ingrese Nombre"></ion-input>
+    <ion-input [(ngModel)]="persona.apellido" label="Apellido" placeholder="Ingrese Apellido "></ion-input>
+    <ion-button (click)="grabar()">Grabar</ion-button>
+  </div>
+
+</ion-content>

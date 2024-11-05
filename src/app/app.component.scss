@@ -1,0 +1,21 @@
+ion-menu {
+    ion-content {
+      ion-list {
+        ion-item {
+          --color: #000000;
+          --icon-color: #000000;
+          --padding-start: 30px;
+          --padding-end: 0px;
+          --padding-top: 15px;
+          --padding-bottom: 15px;
+          font-size: 20px;
+          ion-icon {
+            font-size: 28px;
+          }
+          &:hover {
+            --background: #e0e0e0;
+          }
+        }
+      }
+    }
+  }

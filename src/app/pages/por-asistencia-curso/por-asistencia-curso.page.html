@@ -1,0 +1,19 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="custom-toolbar" color="dark">
+    <ion-menu-button slot="start"></ion-menu-button>
+    <ion-title>Lista de Alumnos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngFor="let materia of materiasDelProfesor">
+    <ion-list>
+      <ion-item>{{ materia.nombre }}</ion-item>
+      <div *ngFor="let asistencia of materia.asistencias"> <!-- Change here -->
+        <ion-list>
+          <ion-item>{{ asistencia.fecha }}</ion-item> <!-- Change here -->
+        </ion-list>
+      </div>
+    </ion-list>
+  </div>
+</ion-content>
