@@ -13,6 +13,7 @@ import { AsistenciaService } from 'src/app/servicios/asistencia.service';
 export class AsistenciaAlumnPage implements OnInit {
   students: AlumnoConPresente[] = [];
   totalClases: number = 0;
+  materiaId: number;
 
   constructor(
     private alertController: AlertController,
@@ -60,14 +61,21 @@ export class AsistenciaAlumnPage implements OnInit {
     const promesas = this.students.map(async (student) => {
       if (student.presente) {
         try {
-          // Incrementar la asistencia del alumno
-          await this.crudAPIService.incrementarAsistencia({ correo: student.correo }).toPromise();
+          // Preparar los datos para enviar a la API
+          const data = {
+            id: this.materiaId,  // Asegúrate de tener el ID de la materia
+            alumno: student.id,       // ID del alumno (asumiendo que tienes un campo `id` en el alumno)
+            Asistencia: 1,               // Aquí podrías ajustar el valor de la asistencia según corresponda
+          };
+  
+          // Realizar la llamada a la API para actualizar la asistencia
+          await this.crudAPIService.actualizarAsistencia(data).toPromise();
         } catch (error) {
           console.error('Error al incrementar la asistencia:', error);
         }
       }
     });
-
+  
     // Espera que todas las promesas se completen
     await Promise.all(promesas);
   

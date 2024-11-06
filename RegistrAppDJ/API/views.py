@@ -109,3 +109,26 @@ def asistencias_por_materia(request):
         asistencia_data.append(asistencia_info)
 
     return Response(asistencia_data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def actualizar_asistencia(request):
+    materia_id = request.data.get('materia_id')  
+    alumno_id = request.data.get('alumno')    
+    nueva_asistencia = request.data.get('asistencia')  
+
+    # Buscar la materia por ID
+    materia = next((m for m in materias if m["id"] == materia_id), None)
+
+    if not materia:
+        return Response({"error": "Materia no encontrada"}, status=status.HTTP_404_NOT_FOUND)
+
+    # Buscar la asistencia del alumno en la materia
+    asistencia = next((a for a in materia['Asistencia'] if a['alumno'] == alumno_id), None)
+
+    if not asistencia:
+        return Response({"error": "Asistencia no encontrada para este alumno en la materia"}, status=status.HTTP_404_NOT_FOUND)
+
+    # Actualizar la asistencia
+    asistencia['Asistencia'] = nueva_asistencia
+
+    return Response({"message": "Asistencia actualizada correctamente"}, status=status.HTTP_200_OK)
