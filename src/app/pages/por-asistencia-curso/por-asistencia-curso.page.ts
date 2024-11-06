@@ -28,8 +28,9 @@ export class PorAsistenciaCursoPage implements OnInit {
         console.log('Datos recibidos:', data);
         this.materia = data;
 
+        // Filtrar las materias del profesor
         this.materiasDelProfesor = this.materia.filter(
-          (m) => m.correo_profe === this.correoProfesor
+          (m: MateriaCurso) => m.correo_profe === this.correoProfesor
         );
 
         localStorage.setItem('materiasDelProfesor', JSON.stringify(this.materiasDelProfesor));
@@ -41,10 +42,10 @@ export class PorAsistenciaCursoPage implements OnInit {
       }
     );
 
-    // Load student data
+    // Cargar los datos de los alumnos
     this.crudAPIService.getAlumno().subscribe(
       (data) => {
-        this.alumnos = data; // Assume this returns an array of Alumno objects
+        this.alumnos = data; // Asumir que esto devuelve un array de objetos Alumno
       },
       (error) => {
         console.error('Error al obtener los alumnos:', error);
@@ -58,9 +59,23 @@ export class PorAsistenciaCursoPage implements OnInit {
       return 'ID de alumno no válido'; // Mensaje en caso de que el ID sea null o undefined
     }
 
-    const alumno = this.alumnos.find(a => Number(a.id) === Number(alumnoId)); // Convierte ambos valores a número
+    // Comparar los ids como string para evitar errores de tipo
+    const alumno = this.alumnos.find((a) => String(a.id) === String(alumnoId));
     return alumno ? `${alumno.nombre} ${alumno.apellido}` : 'Alumno no encontrado';
-    
-    
   }
+
+  // Función para contar los días presentes por alumno
+  contarAsistenciasPorAlumno(asistencias: any[]): { [key: number]: number } {
+    const contador: { [key: number]: number } = {};
+  
+    asistencias.forEach((asistencia) => {
+      if (asistencia.presente) {
+        // Si el alumno está presente, sumamos uno a su contador
+        contador[asistencia.alumno] = (contador[asistencia.alumno] || 0) + 1; // Cambiado a asistencia.alumno
+      }
+    });
+  
+    return contador;
+  }
+  
 }

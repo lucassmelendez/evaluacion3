@@ -12,7 +12,8 @@
       <div *ngFor="let asistencia of materia.asistencias">
         <ion-list>
           <ion-item>
-            {{ getStudentName(asistencia.alumno) }} - {{ asistencia.fecha }} <!-- Display student name -->
+            {{ getStudentName(asistencia.alumno) }} - 
+            {{ contarAsistenciasPorAlumno(materia.asistencias)[asistencia.alumno] || 0 }} Días Presentes
           </ion-item>
         </ion-list>
       </div>
