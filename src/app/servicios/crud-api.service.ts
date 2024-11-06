@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Alumno,Profesor } from '../model/alumno'; // Importar las interfaces necesarias
+import { AsistenciaCurso } from 'src/app/model/materias';
 
 
 @Injectable({
@@ -11,6 +12,7 @@ import { Alumno,Profesor } from '../model/alumno'; // Importar las interfaces ne
 })
 export class CrudAPIService {
   private rutaApiAlumno = "http://127.0.0.1:8000/api/alumno/";
+  private rutaApiAsist = "http://127.0.0.1:8000/api/asistencia/";
   private rutaIncrementarAsistencia = "http://127.0.0.1:8000/api/incrementar_asistencia/";
   private rutaAsistenciasPorMateria = "http://127.0.0.1:8000/api/asistencias_por_materia/";
   private apiUrl = 'http://127.0.0.1:8000/api';
@@ -108,8 +110,8 @@ export class CrudAPIService {
     return this.firestore.collection('alumnos').doc(studentId).update({ asistencia });
   }
 
-  actualizarAsistencia(data: any): Observable<any> {
-    return this.http.put(this.rutaAsistenciasPorMateria, data);  // Nota la barra al final
+  actualizarAsistencia(data: AsistenciaCurso) {
+    return this.http.post('http://127.0.0.1:8000/api/asistencia/', data);
   }
 
 }

@@ -23,12 +23,11 @@ export class AsistenciaAlumnPage implements OnInit {
     private crudAPIService: CrudAPIService,
     private navCtrl: NavController,
     private asistenciaService: AsistenciaService,
-    private apiMateriasService:ApiMateriasService
+    private apiMateriasService: ApiMateriasService
   ) {}
 
   ngOnInit() {
     this.loadAlumnos();
-
 
     // Suscribirse a los correos escaneados
     this.asistenciaService.correosEscaneados$.subscribe((correosEscaneados) => {
@@ -48,14 +47,13 @@ export class AsistenciaAlumnPage implements OnInit {
         })) as AlumnoConPresente[];
       },
       (error) => {
-        console.error('Error al obtener los datos:', error);
+        console.error('Error al obtener los datos de los alumnos:', error);
       }
     );
   }
 
-  // Método para cargar los detalles de la materia seleccionada
   loadMateria() {
-    // Suponiendo que tienes la forma de obtener la materia por el id
+    // Obtener los detalles de la materia seleccionada
     this.apiMateriasService.getMaterias().subscribe(
       (materia: MateriaCurso) => {
         this.materiaSeleccionada = materia;
@@ -71,9 +69,6 @@ export class AsistenciaAlumnPage implements OnInit {
   }
 
   async confirmarAsistencia() {
-    // Incrementar el total de clases
-    this.claseService.incrementarClases();
-
     // Registrar la asistencia de los alumnos seleccionados
     const promesas = this.students.map(async (student) => {
       if (student.presente) {
@@ -89,15 +84,16 @@ export class AsistenciaAlumnPage implements OnInit {
           // Realizar la llamada a la API para actualizar la asistencia
           await this.crudAPIService.actualizarAsistencia(data).toPromise();
         } catch (error) {
-          console.log();
-          
-          console.error('Error al incrementar la asistencia:', error);
+          console.error('Error al registrar asistencia para el alumno:', student.id, error);
         }
       }
     });
 
     // Espera que todas las promesas se completen
     await Promise.all(promesas);
+
+    // Incrementar el total de clases después de registrar todas las asistencias
+    this.claseService.incrementarClases();
 
     // Navegar a la página de inicio
     this.navCtrl.navigateForward(['/home-profe']);

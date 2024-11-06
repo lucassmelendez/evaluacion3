@@ -11,7 +11,7 @@ from .views import (
     IncrementarAsistenciaView,
     guardar_alumno,
     generar_pdf_alumnos,
-    asistencias_por_materia,
+    RegistrarAsistenciaView,
 )
 
 urlpatterns = [
@@ -19,6 +19,7 @@ urlpatterns = [
     path('api/alumno/', AlumnoViewSet.as_view(), name='alumno-list'),
     path('api/materias/', MateriasViewSet.as_view(), name='materias-list'),
     path('api/profesor/', ProfesorViewSet.as_view(), name='profesor-list'),
+    path('api/asistencia/', RegistrarAsistenciaView.as_view(), name='registrar_asistencia'),
     path('api/incrementar_asistencia/', IncrementarAsistenciaView.as_view(), name='incrementar-asistencia'),
     url(r'^api/alumno/pdf/$', generar_pdf_alumnos, name='generar-pdf-alumnos'),
     path('api/guardar-alumno/', guardar_alumno, name='guardar_alumno'),

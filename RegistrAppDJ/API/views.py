@@ -43,6 +43,48 @@ class IncrementarAsistenciaView(APIView):
         
         return Response({'success': True, 'asistencia': alumno_obj.asistencia}, status=status.HTTP_200_OK)
 
+class AsistenciaListView(APIView):
+    def get(self, request, *args, **kwargs):
+        # Filtrar las asistencias por alumno si se proporciona un parámetro 'alumno'
+        alumno_id = request.query_params.get('alumno')
+        if alumno_id:
+            asistencias = Asistencia.objects.filter(alumno_id=alumno_id)
+        else:
+            asistencias = Asistencia.objects.all()
+
+        # Serializar las asistencias
+        serializer = AsistenciaSerializer(asistencias, many=True)
+
+        # Retornar la respuesta con los datos serializados
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class RegistrarAsistenciaView(APIView):
+    def post(self, request, *args, **kwargs):
+        # Datos del request
+        alumno_id = request.data.get('alumno')
+        materia_id = request.data.get('materia')
+        asistencia = request.data.get('asistencia')
+        fecha = request.data.get('fecha')
+
+        if not alumno_id or not materia_id or asistencia is None or not fecha:
+            return Response({"error": "Faltan parámetros en la solicitud."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Verifica si ya existe la asistencia
+        if Asistencia.objects.filter(alumno_id=alumno_id, materia_id=materia_id, fecha=fecha).exists():
+            return Response({"error": "Ya existe una asistencia registrada para este alumno en esta fecha."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Crear una nueva asistencia
+        new_asistencia = Asistencia.objects.create(
+            alumno_id=alumno_id,
+            materia_id=materia_id,
+            fecha=fecha,
+            presente=asistencia
+        )
+
+        # Serializar la respuesta
+        serializer = AsistenciaSerializer(new_asistencia)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
 def generar_pdf_alumnos(request):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="informe_alumnos.pdf"'
@@ -110,7 +152,7 @@ def asistencias_por_materia(request):
 
     return Response(asistencia_data, status=status.HTTP_200_OK)
 
-@api_view(['PUT'])
+@api_view(['POST'])  # Usamos POST para crear nuevas asistencias
 def actualizar_asistencia(request):
     print("Recibiendo solicitud de actualización de asistencia...")
     print("Datos recibidos:", request.data)
@@ -125,22 +167,15 @@ def actualizar_asistencia(request):
         return Response({"error": "Faltan parámetros en la solicitud."}, status=status.HTTP_400_BAD_REQUEST)
 
     # Buscar la materia
-    materia = materia.objects.filter(id=materia_id).first()
+    materia = materia.objects.filter(id=materia_id).first()  # Corrige 'materia' a 'Materia'
     if not materia:
         return Response({"error": "Materia no encontrada."}, status=status.HTTP_404_NOT_FOUND)
 
     # Buscar el alumno
-    alumno_obj = alumno.objects.filter(id=alumno_id).first()
+    alumno_obj = alumno.objects.filter(id=alumno_id).first()  # Corrige 'alumno' a 'Alumno'
     if not alumno_obj:
         return Response({"error": "Alumno no encontrado."}, status=status.HTTP_404_NOT_FOUND)
 
-    # Verificar si la asistencia ya existe
-    try:
-        asistencia_obj = Asistencia.objects.get(alumno_id=alumno_id, materia_id=materia_id, fecha=fecha)
-        asistencia_obj.presente = asistencia
-        asistencia_obj.save()
-        return Response({"message": "Asistencia actualizada correctamente."}, status=status.HTTP_200_OK)
-    except Asistencia.DoesNotExist:
-        # Crear una nueva entrada si no existe
-        Asistencia.objects.create(alumno_id=alumno_id, materia_id=materia_id, fecha=fecha, presente=asistencia)
-        return Response({"message": "Asistencia registrada correctamente."}, status=status.HTTP_201_CREATED)
+    # Crear una nueva asistencia
+    Asistencia.objects.create(alumno_id=alumno_id, materia_id=materia_id, fecha=fecha, presente=asistencia)
+    return Response({"message": "Asistencia registrada correctamente."}, status=status.HTTP_201_CREATED)
