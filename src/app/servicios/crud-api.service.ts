@@ -109,7 +109,7 @@ export class CrudAPIService {
   }
 
   actualizarAsistencia(data: any): Observable<any> {
-    return this.http.post(this.rutaAsistenciasPorMateria, data);  // Nota la barra al final
+    return this.http.put(this.rutaAsistenciasPorMateria, data);  // Nota la barra al final
   }
 
 }

@@ -110,41 +110,37 @@ def asistencias_por_materia(request):
 
     return Response(asistencia_data, status=status.HTTP_200_OK)
 
-@csrf_exempt
-@api_view(['POST'])
+@api_view(['PUT'])
 def actualizar_asistencia(request):
-    print("nombre")
-    print(request)
+    print("Recibiendo solicitud de actualización de asistencia...")
+    print("Datos recibidos:", request.data)
 
-    alumno_id = request.data.get('alumno')  # ID del alumno
-    materia_id = request.data.get('materia')  # ID de la materia
-    asistencia = request.data.get('asistencia')  # Estado de la asistencia (True o False)
-    fecha = request.data.get('fecha')  # Fecha en formato string (YYYY-MM-DD)
+    alumno_id = request.data.get('alumno')
+    materia_id = request.data.get('materia')
+    asistencia = request.data.get('asistencia')
+    fecha = request.data.get('fecha')
 
     # Validar que los parámetros necesarios estén presentes
     if not alumno_id or not materia_id or asistencia is None or not fecha:
         return Response({"error": "Faltan parámetros en la solicitud."}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Buscar la materia por ID
-    materia = materias.objects.filter(id=materia_id).first()  # Ajustado al modelo de Django
-
+    # Buscar la materia
+    materia = materia.objects.filter(id=materia_id).first()
     if not materia:
         return Response({"error": "Materia no encontrada."}, status=status.HTTP_404_NOT_FOUND)
 
-    # Buscar el alumno por ID
+    # Buscar el alumno
     alumno_obj = alumno.objects.filter(id=alumno_id).first()
     if not alumno_obj:
         return Response({"error": "Alumno no encontrado."}, status=status.HTTP_404_NOT_FOUND)
 
-    # Verificar si la asistencia ya existe para el alumno en esa materia y fecha
+    # Verificar si la asistencia ya existe
     try:
-        asistencia_obj = Asistencia.objects.get(alumno_id=alumno_id, nombre_id=materia_id, fecha=fecha)
-        # Si existe, actualizar la asistencia
+        asistencia_obj = Asistencia.objects.get(alumno_id=alumno_id, materia_id=materia_id, fecha=fecha)
         asistencia_obj.presente = asistencia
         asistencia_obj.save()
         return Response({"message": "Asistencia actualizada correctamente."}, status=status.HTTP_200_OK)
     except Asistencia.DoesNotExist:
-        # Si no existe, crear una nueva entrada
-        Asistencia.objects.create(alumno_id=alumno_id, nombre_id=materia_id, fecha=fecha, presente=asistencia)
+        # Crear una nueva entrada si no existe
+        Asistencia.objects.create(alumno_id=alumno_id, materia_id=materia_id, fecha=fecha, presente=asistencia)
         return Response({"message": "Asistencia registrada correctamente."}, status=status.HTTP_201_CREATED)
-
