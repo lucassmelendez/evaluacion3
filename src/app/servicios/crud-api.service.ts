@@ -110,8 +110,6 @@ export class CrudAPIService {
     return this.firestore.collection('alumnos').doc(studentId).update({ asistencia });
   }
 
-  actualizarAsistencia(data: AsistenciaCurso) {
-    return this.http.post('http://127.0.0.1:8000/api/asistencia/', data);
-  }
+
 
 }

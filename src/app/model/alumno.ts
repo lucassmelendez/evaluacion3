@@ -13,7 +13,6 @@ export interface Alumno {
 
 export interface Materia {
     nombre: string;
-    duracion: string;
     correo_profe: string;
     totalClases: number;
 }

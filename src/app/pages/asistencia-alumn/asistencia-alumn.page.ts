@@ -15,7 +15,9 @@ import { ApiMateriasService } from 'src/app/servicios/api-materias.service';
 export class AsistenciaAlumnPage implements OnInit {
   students: AlumnoConPresente[] = [];
   materiaId: number;
-  materiaSeleccionada: MateriaCurso;  // Añadido para representar la materia seleccionada
+  materiaSeleccionada: MateriaCurso[] = []; // Representa la materia seleccionada
+  correoProfesor: string | null = ''; // Correo del profesor logueado
+  materiasDelProfesor: MateriaCurso[] = [];
 
   constructor(
     private alertController: AlertController,
@@ -34,8 +36,28 @@ export class AsistenciaAlumnPage implements OnInit {
       this.marcarPresentes(correosEscaneados);
     });
 
-    // Cargar la información de la materia
-    this.loadMateria();
+    this.correoProfesor = localStorage.getItem('usuario');
+
+    // Obtener las materias desde el API
+    this.apiMateriasService.getMaterias().subscribe(
+      (data) => {
+        console.log('Datos recibidos:', data);
+        this.materiaSeleccionada = data;
+
+        // Filtrar las materias que correspondan al profesor logueado
+        this.materiasDelProfesor = this.materiaSeleccionada.filter(
+          (m) => m.correo_profe === this.correoProfesor
+        );
+
+        // Guardar las materias del profesor en localStorage
+        localStorage.setItem('materiasDelProfesor', JSON.stringify(this.materiasDelProfesor));
+
+        console.log('Materias del profesor:', this.materiasDelProfesor);
+      },
+      (error) => {
+        console.error('Error al obtener los datos:', error);
+      }
+    );
   }
 
   loadAlumnos() {
@@ -52,59 +74,73 @@ export class AsistenciaAlumnPage implements OnInit {
     );
   }
 
-  loadMateria() {
-    // Obtener los detalles de la materia seleccionada
-    this.apiMateriasService.getMaterias().subscribe(
-      (materia: MateriaCurso) => {
-        this.materiaSeleccionada = materia;
-      },
-      (error) => {
-        console.error('Error al obtener los datos de la materia:', error);
-      }
-    );
-  }
-
   toggleAttendance(student: AlumnoConPresente, event: any) {
     student.presente = event.detail.checked;
   }
 
   async confirmarAsistencia() {
+    // Cargar la materia seleccionada desde localStorage
+    const materiasGuardadas = localStorage.getItem('materiasDelProfesor');
+    this.materiaSeleccionada = materiasGuardadas ? JSON.parse(materiasGuardadas) : [];
+  
+    // Crear un arreglo de asistencias
+    const asistencias: AsistenciaCurso[] = [];
+  
     // Registrar la asistencia de los alumnos seleccionados
-    const promesas = this.students.map(async (student) => {
+    this.students.forEach((student) => {
       if (student.presente) {
-        try {
-          // Crear el objeto de asistencia con los valores adecuados
-          const data: AsistenciaCurso = {
-            alumno: Number(student.id),            // ID del alumno
-            materia: this.materiaSeleccionada,      // El objeto completo de MateriaCurso
-            asistencia: true,                       // Asistencia registrada como 'presente'
-            fecha: new Date().toISOString().split('T')[0],  // Fecha actual en formato YYYY-MM-DD
-          };
-
-          // Realizar la llamada a la API para actualizar la asistencia
-          await this.crudAPIService.actualizarAsistencia(data).toPromise();
-        } catch (error) {
-          console.error('Error al registrar asistencia para el alumno:', student.id, error);
-        }
+        const asistenciaData: AsistenciaCurso = {
+          alumno: student.id ? parseInt(student.id, 10) : 0, // Asegúrate de que alumno sea un número válido
+          nombre: this.materiaSeleccionada[0], // La materia seleccionada completa
+          asistencia: true,
+          fecha: new Date().toISOString(), // Fecha actual en formato ISO
+        };
+  
+        // Añadimos la asistencia al arreglo
+        asistencias.push(asistenciaData);
       }
     });
-
-    // Espera que todas las promesas se completen
-    await Promise.all(promesas);
-
-    // Incrementar el total de clases después de registrar todas las asistencias
-    this.claseService.incrementarClases();
-
-    // Navegar a la página de inicio
-    this.navCtrl.navigateForward(['/home-profe']);
-
-    // Mostrar alerta de éxito
-    const alert = await this.alertController.create({
-      message: 'Asistencia registrada exitosamente',
-      buttons: ['OK'],
-    });
-    await alert.present();
+  
+    // Verificamos si hay asistencias que registrar
+    if (asistencias.length > 0) {
+      try {
+        // Aquí estamos enviando todo el objeto para la materia con el arreglo de asistencias
+        const materiaData = {
+          nombre: this.materiaSeleccionada[0].nombre,
+          asistencias: asistencias, // Enviamos el arreglo de asistencias
+          correo_profe: this.materiaSeleccionada[0].correo_profe,
+          totalClases: this.materiaSeleccionada[0].totalClases,
+        };
+  
+        // Realizamos la solicitud POST al backend
+        await this.apiMateriasService.actualizarAsistencia(materiaData).toPromise();
+        
+        // Incrementar el total de clases después de registrar todas las asistencias
+        this.claseService.incrementarClases();
+  
+        // Navegar a la página de inicio
+        this.navCtrl.navigateForward(['/home-profe']);
+  
+        // Mostrar alerta de éxito
+        const alert = await this.alertController.create({
+          message: 'Asistencia registrada exitosamente',
+          buttons: ['OK'],
+        });
+        await alert.present();
+      } catch (error) {
+        console.error('Error al registrar la asistencia:', error);
+      }
+    } else {
+      // Si no hay asistentes presentes, mostramos un mensaje
+      const alert = await this.alertController.create({
+        message: 'No se registraron asistencias.',
+        buttons: ['OK'],
+      });
+      await alert.present();
+    }
   }
+  
+  
 
   marcarPresentes(correosEscaneados: string[]) {
     for (const student of this.students) {

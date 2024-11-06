@@ -177,5 +177,5 @@ def actualizar_asistencia(request):
         return Response({"error": "Alumno no encontrado."}, status=status.HTTP_404_NOT_FOUND)
 
     # Crear una nueva asistencia
-    Asistencia.objects.create(alumno_id=alumno_id, materia_id=materia_id, fecha=fecha, presente=asistencia)
+    Asistencia.objects.create(alumno_id=alumno_id, materia_id=materia_id, fecha=fecha, asistencia=asistencia)
     return Response({"message": "Asistencia registrada correctamente."}, status=status.HTTP_201_CREATED)
