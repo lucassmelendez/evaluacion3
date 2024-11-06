@@ -64,18 +64,35 @@ export class PorAsistenciaCursoPage implements OnInit {
     return alumno ? `${alumno.nombre} ${alumno.apellido}` : 'Alumno no encontrado';
   }
 
-  // Función para contar los días presentes por alumno
-  contarAsistenciasPorAlumno(asistencias: any[]): { [key: number]: number } {
-    const contador: { [key: number]: number } = {};
-  
-    asistencias.forEach((asistencia) => {
-      if (asistencia.presente) {
-        // Si el alumno está presente, sumamos uno a su contador
-        contador[asistencia.alumno] = (contador[asistencia.alumno] || 0) + 1; // Cambiado a asistencia.alumno
+  // Función para contar los días presentes por alumno, sin eliminar duplicados
+  contarAsistenciasPorAlumno(asistencias: any[]): { [key: string]: number } {
+    const contador: { [key: string]: number } = {}; // Cambiar el tipo de clave a string
+
+    // Contar todas las asistencias, incluso las que son false
+    this.alumnos.forEach((alumno) => {
+      if (alumno.id !== undefined) {  // Verificar que el ID del alumno no sea undefined
+        // Filtrar las asistencias del alumno
+        const asistenciasDelAlumno = asistencias.filter(
+          (asistencia) => asistencia.alumno === alumno.id
+        );
+
+        // Si el alumno tiene asistencias, contar los días presentes
+        const diasPresentes = asistenciasDelAlumno.filter((asistencia) => asistencia.presente).length;
+
+        // Si el alumno no tiene ningún día presente, asignar 0
+        contador[String(alumno.id)] = diasPresentes > 0 ? diasPresentes : 0; // Usar String() para asegurar el tipo
       }
     });
-  
+
     return contador;
   }
-  
+
+  // Filtrar los alumnos únicos por asistencia (sin duplicados en la lista)
+  getUniqueAlumnos(asistencias: any[]): number[] {
+    const alumnosUnicos = new Set<number>();
+    asistencias.forEach((asistencia) => {
+      alumnosUnicos.add(asistencia.alumno);
+    });
+    return Array.from(alumnosUnicos);
+  }
 }
