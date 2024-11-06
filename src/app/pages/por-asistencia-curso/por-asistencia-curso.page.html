@@ -9,9 +9,11 @@
   <div *ngFor="let materia of materiasDelProfesor">
     <ion-list>
       <ion-item>{{ materia.nombre }}</ion-item>
-      <div *ngFor="let asistencia of materia.asistencias"> <!-- Change here -->
+      <div *ngFor="let asistencia of materia.asistencias">
         <ion-list>
-          <ion-item>{{ asistencia.fecha }}</ion-item> <!-- Change here -->
+          <ion-item>
+            {{ getStudentName(asistencia.alumno) }} - {{ asistencia.fecha }} <!-- Display student name -->
+          </ion-item>
         </ion-list>
       </div>
     </ion-list>

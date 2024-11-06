@@ -2,17 +2,17 @@
 export interface MateriaCurso {
     id: number;
     nombre: string;
-    duracion: string;         
-    correo_profe: string;     
-    totalClases: number;      
+    duracion: string;
+    correo_profe: string;
+    totalClases: number;
     asistencias: AsistenciaCurso[]; // Cambiamos el nombre aquí
 }
 
 export interface AsistenciaCurso {
-    alumno_id: number;
+    alumno: number;
     materia: MateriaCurso; // Cambiamos el nombre aquí
     asistencia: boolean;
-    fecha: string; 
+    fecha: string;
 }
 
 // Funciones

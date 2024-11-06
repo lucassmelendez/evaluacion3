@@ -30,7 +30,7 @@ export class MateriaAlumnPage implements OnInit {
         console.log('Materias cargadas:', data);
         this.materias = data.map(materia => {
           // Filtra las asistencias por el alumnoId
-          const asistenciasPorAlumno = materia.asistencias.filter(asistencia => asistencia.alumno_id === this.alumnoId);
+          const asistenciasPorAlumno = materia.asistencias.filter(asistencia => asistencia.alumno === this.alumnoId);
 
           // Devuelve la materia con las asistencias del alumno específico
           return { ...materia, asistenciasPorAlumno };
