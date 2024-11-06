@@ -4,6 +4,8 @@ import { ClaseService } from 'src/app/servicios/clase.service';
 import { CrudAPIService } from 'src/app/servicios/crud-api.service';
 import { AlumnoConPresente } from 'src/app/model/alumno';
 import { AsistenciaService } from 'src/app/servicios/asistencia.service';
+import { AsistenciaCurso, MateriaCurso } from 'src/app/model/materias';
+import { ApiMateriasService } from 'src/app/servicios/api-materias.service';
 
 @Component({
   selector: 'app-asistencia-alumn',
@@ -12,27 +14,29 @@ import { AsistenciaService } from 'src/app/servicios/asistencia.service';
 })
 export class AsistenciaAlumnPage implements OnInit {
   students: AlumnoConPresente[] = [];
-  totalClases: number = 0;
   materiaId: number;
+  materiaSeleccionada: MateriaCurso;  // Añadido para representar la materia seleccionada
 
   constructor(
     private alertController: AlertController,
     private claseService: ClaseService,
     private crudAPIService: CrudAPIService,
     private navCtrl: NavController,
-    private asistenciaService: AsistenciaService
+    private asistenciaService: AsistenciaService,
+    private apiMateriasService:ApiMateriasService
   ) {}
 
   ngOnInit() {
     this.loadAlumnos();
-    this.claseService.totalClases$.subscribe((total) => {
-      this.totalClases = total;
-    });
+
 
     // Suscribirse a los correos escaneados
     this.asistenciaService.correosEscaneados$.subscribe((correosEscaneados) => {
       this.marcarPresentes(correosEscaneados);
     });
+
+    // Cargar la información de la materia
+    this.loadMateria();
   }
 
   loadAlumnos() {
@@ -49,6 +53,19 @@ export class AsistenciaAlumnPage implements OnInit {
     );
   }
 
+  // Método para cargar los detalles de la materia seleccionada
+  loadMateria() {
+    // Suponiendo que tienes la forma de obtener la materia por el id
+    this.apiMateriasService.getMaterias().subscribe(
+      (materia: MateriaCurso) => {
+        this.materiaSeleccionada = materia;
+      },
+      (error) => {
+        console.error('Error al obtener los datos de la materia:', error);
+      }
+    );
+  }
+
   toggleAttendance(student: AlumnoConPresente, event: any) {
     student.presente = event.detail.checked;
   }
@@ -56,44 +73,41 @@ export class AsistenciaAlumnPage implements OnInit {
   async confirmarAsistencia() {
     // Incrementar el total de clases
     this.claseService.incrementarClases();
-  
+
     // Registrar la asistencia de los alumnos seleccionados
     const promesas = this.students.map(async (student) => {
       if (student.presente) {
         try {
-          // Preparar los datos para enviar a la API
-          const data = {
-            id: this.materiaId,  // Asegúrate de tener el ID de la materia
-            alumno: student.id,       // ID del alumno (asumiendo que tienes un campo `id` en el alumno)
-            Asistencia: 1,               // Aquí podrías ajustar el valor de la asistencia según corresponda
+          // Crear el objeto de asistencia con los valores adecuados
+          const data: AsistenciaCurso = {
+            alumno: Number(student.id),            // ID del alumno
+            materia: this.materiaSeleccionada,      // El objeto completo de MateriaCurso
+            asistencia: true,                       // Asistencia registrada como 'presente'
+            fecha: new Date().toISOString().split('T')[0],  // Fecha actual en formato YYYY-MM-DD
           };
-  
+
           // Realizar la llamada a la API para actualizar la asistencia
           await this.crudAPIService.actualizarAsistencia(data).toPromise();
         } catch (error) {
+          console.log();
+          
           console.error('Error al incrementar la asistencia:', error);
         }
       }
     });
-  
+
     // Espera que todas las promesas se completen
     await Promise.all(promesas);
-  
+
     // Navegar a la página de inicio
     this.navCtrl.navigateForward(['/home-profe']);
-  
+
     // Mostrar alerta de éxito
     const alert = await this.alertController.create({
       message: 'Asistencia registrada exitosamente',
       buttons: ['OK'],
     });
     await alert.present();
-  }
-
-  getAttendancePercentage(asistencia: number): string {
-    if (this.totalClases === 0) return '0%';
-    const percentage = (asistencia / this.totalClases) * 100;
-    return percentage.toFixed(2) + '%';
   }
 
   marcarPresentes(correosEscaneados: string[]) {

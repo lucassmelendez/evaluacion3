@@ -10,7 +10,7 @@ from .views import (
     IncrementarAsistenciaView,
     guardar_alumno,
     generar_pdf_alumnos,
-    asistencias_por_materia, 
+    asistencias_por_materia,
 )
 
 urlpatterns = [
