@@ -9,8 +9,8 @@ import { AsistenciaCurso } from 'src/app/model/materias';
   providedIn: 'root'
 })
 export class ApiMateriasService {
-  private apiUrl = "https://cartadesuicidio.pythonanywhere.com/api/materias/";
-private api = "https://cartadesuicidio.pythonanywhere.com/api";
+  private apiUrl = "https://cartadesuicidio.pythonanywhere.com/api/materias/"; // Solo usa una URL base
+  private api = 'https://cartadesuicidio.pythonanywhere.com/api';
 
   constructor(private http: HttpClient) { }
 
