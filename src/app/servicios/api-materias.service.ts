@@ -1,16 +1,15 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, retry } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { MateriaCurso } from '../model/materias';
-import { AsistenciaCurso } from 'src/app/model/materias';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiMateriasService {
-  private apiUrl = "https://cartadesuicidio.pythonanywhere.com/api/materias/"; // Solo usa una URL base
-  private api = 'https://cartadesuicidio.pythonanywhere.com/api';
+  private apiUrl = "https://registrappp.pythonanywhere.com/api/materias/"; // Solo usa una URL base
+  private api = 'https://registrappp.pythonanywhere.com/api';
 
   constructor(private http: HttpClient) { }
 

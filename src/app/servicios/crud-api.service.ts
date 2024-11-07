@@ -1,20 +1,19 @@
-import { MateriaCurso } from 'src/app/model/materias';
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { Alumno,Profesor } from '../model/alumno'; // Importar las interfaces necesarias
-import { AsistenciaCurso } from 'src/app/model/materias';
+import { Observable } from 'rxjs';
+import { MateriaCurso } from 'src/app/model/materias';
+import { Alumno, Profesor } from '../model/alumno'; // Importar las interfaces necesarias
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class CrudAPIService {
-  private rutaApiAlumno = "https://cartadesuicidio.pythonanywhere.com/api/alumno/";
-  private rutaIncrementarAsistencia = "https://cartadesuicidio.pythonanywhere.com/api/incrementar_asistencia/";
-  private rutaAsistenciasPorMateria = "https://cartadesuicidio.pythonanywhere.com/api/asistencias_por_materia/";
-  private apiUrl = 'https://cartadesuicidio.pythonanywhere.com/api';
+  private rutaApiAlumno = "https://registrappp.pythonanywhere.com/api/alumno/";
+  private rutaIncrementarAsistencia = "https://registrappp.pythonanywhere.com/api/incrementar_asistencia/";
+  private rutaAsistenciasPorMateria = "https://registrappp.pythonanywhere.com/api/asistencias_por_materia/";
+  private apiUrl = 'https://registrappp.pythonanywhere.com/api';
 
   constructor(private http: HttpClient, private firestore: AngularFirestore) {}
 
