@@ -7,8 +7,6 @@ class UsuarioSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class AsistenciaSerializer(serializers.ModelSerializer):
-    nombre = serializers.CharField(source='materia.nombre', read_only=True)
-
     class Meta:
         model = Asistencia
         fields = ['alumno', 'nombre', 'fecha', 'presente']

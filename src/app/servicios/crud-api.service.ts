@@ -4,6 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Alumno,Profesor } from '../model/alumno'; // Importar las interfaces necesarias
+import { AsistenciaCurso } from 'src/app/model/materias';
+
 
 @Injectable({
   providedIn: 'root'
@@ -32,8 +34,6 @@ export class CrudAPIService {
   getMateriasConAsistencias(): Observable<MateriaCurso[]> {
     return this.http.get<MateriaCurso[]>(`${this.apiUrl}/asistencias_por_materia`);
   }
-
-
 
   // Métodos de interacción con Firestore
 
@@ -109,5 +109,6 @@ export class CrudAPIService {
     return this.firestore.collection('alumnos').doc(studentId).update({ asistencia });
   }
 
-  
+
+
 }

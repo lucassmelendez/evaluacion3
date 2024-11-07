@@ -26,9 +26,9 @@ class alumno(models.Model):
 
 class materias(models.Model):
     nombre = models.CharField(max_length=50, null=False)
-    duracion_en_min = models.IntegerField()
     correo_profe = models.CharField(max_length=50, null=False)
     totalClases = models.IntegerField(default=0)
+    duracion_en_min = models.IntegerField(default=0)
 
     def __str__(self) -> str:
         return self.nombre

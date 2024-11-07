@@ -11,6 +11,10 @@ from reportlab.pdfgen import canvas
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 import json
+from .models import Asistencia, alumno as alumnoMode, materias
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 
 # Create your views here.
 class UsuarioViewSet(generics.ListCreateAPIView):
@@ -43,20 +47,106 @@ class IncrementarAsistenciaView(APIView):
         
         return Response({'success': True, 'asistencia': alumno_obj.asistencia}, status=status.HTTP_200_OK)
 
+class AsistenciaListView(APIView):
+    def get(self, request, *args, **kwargs):
+        # Filtrar las asistencias por alumno si se proporciona un parámetro 'alumno'
+        alumno_id = request.query_params.get('alumno')
+        if alumno_id:
+            asistencias = Asistencia.objects.filter(alumno_id=alumno_id)
+        else:
+            asistencias = Asistencia.objects.all()
+
+        # Serializar las asistencias
+        serializer = AsistenciaSerializer(asistencias, many=True)
+
+        # Retornar la respuesta con los datos serializados
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class RegistrarAsistenciaView(APIView):
+    def post(self, request, *args, **kwargs):
+        materia_nombre = request.data.get("nombre")
+        asistencias = request.data.get("asistencias")
+        correo_profe = request.data.get("correo_profe")
+        total_clases = request.data.get("totalClases")
+
+        # Verificar que todos los datos estén presentes
+        if not materia_nombre or not asistencias or not correo_profe or total_clases is None:
+            return Response({"error": "Faltan parámetros en la solicitud."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Buscar la materia correspondiente
+        materia = materias.objects.filter(nombre=materia_nombre, correo_profe=correo_profe).first()
+        if not materia:
+            return Response({"error": "Materia no encontrada."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Actualizar el total de clases
+        materia.totalClases = total_clases
+        materia.save()
+
+        # Registrar cada asistencia individualmente
+        for asistencia in asistencias:
+            alumno_id = asistencia.get("alumno")
+            fecha = asistencia.get("fecha")
+            presente = asistencia.get("asistencia")
+
+            # Evitar duplicados
+            if Asistencia.objects.filter(alumno_id=alumno_id, nombre=materia, fecha=fecha).exists():
+                continue  # Pasar a la siguiente asistencia si ya existe
+
+            # Crear la asistencia
+            Asistencia.objects.create(alumno_id=alumno_id, nombre=materia, fecha=fecha, presente=presente)
+
+        return Response({"message": "Asistencias registradas correctamente."}, status=status.HTTP_201_CREATED)
+
 def generar_pdf_alumnos(request):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="informe_alumnos.pdf"'
 
-    p = canvas.Canvas(response)
-    
-    alumnos_list = alumno.objects.all()  
-    y = 800
-    p.setFont("Helvetica", 12)
-    p.drawString(100, y + 20, "Informe de Alumnos")
+    p = canvas.Canvas(response, pagesize=A4)
+    width, height = A4
+    y = height - 50
+    p.setFont("Helvetica-Bold", 14)
+    p.drawString(100, y, "Informe de Alumnos")
 
-    for alumno_instance in alumnos_list:  
-        y -= 20  
-        p.drawString(100, y, f"ID: {alumno_instance.id} - Nombre: {alumno_instance.nombre} {alumno_instance.apellido} // Asistencia: {alumno_instance.asistencia} día(s) asistido(s)")
+    y -= 30
+    p.setFont("Helvetica", 12)
+
+    # Encabezado de tabla
+    data = [["ID", "Nombre", "Apellido", "Asistencias", "Porcentaje de Asistencia"]]
+
+    alumnos_list = alumnoMode.objects.all()  # Usamos alumnoMode aquí
+    total_clases = 20  # Reemplaza esto con el total de clases real
+
+    for alumno_instance in alumnos_list:
+        # Obtén las asistencias del alumno
+        asistencias = Asistencia.objects.filter(alumno=alumno_instance)
+        
+        # Calcula el total de días presentes
+        dias_presentes = asistencias.filter(presente=True).count()
+        porcentaje_asistencia = (dias_presentes / total_clases) * 100 if total_clases > 0 else 0
+        
+        data.append([
+            alumno_instance.id,
+            alumno_instance.nombre,
+            alumno_instance.apellido,
+            f"{dias_presentes} días",
+            f"{porcentaje_asistencia:.2f}%"
+        ])
+
+    # Configuración de estilo de tabla
+    table = Table(data)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ]))
+
+    table.wrapOn(p, width, height)
+    table.drawOn(p, 40, y - (len(data) * 20))
 
     p.showPage()
     p.save()
@@ -109,3 +199,68 @@ def asistencias_por_materia(request):
         asistencia_data.append(asistencia_info)
 
     return Response(asistencia_data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])  # Usamos POST para crear o actualizar asistencia
+def actualizar_asistencia(request):
+    try:
+        alumno_id = request.data.get('alumno')
+        nombre = request.data.get('nombre')
+        fecha = request.data.get('fecha')
+        presente = request.data.get('presente')
+
+        # Verify that all required fields are present
+        if not alumno_id or not nombre:
+            return Response({'error': 'Alumno and Nombre are required fields.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Fetch or verify the associated Alumno and Materia instances
+        alumno = alumnoMode.objects.get(id=alumno_id)
+        materia = materias.objects.get(nombre=nombre)
+
+        # Create the Asistencia record
+        asistencia = Asistencia.objects.create(
+            alumno=alumno,
+            materia=materia,
+            fecha=fecha,
+            presente=presente
+        )
+        serializer = AsistenciaSerializer(asistencia)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+class AsistenciaListView(APIView):
+    def get(self, request, *args, **kwargs):
+        # Obtén las asistencias por alumno si se proporciona el ID del alumno
+        alumno_id = request.query_params.get('alumno')
+        if alumno_id:
+            asistencias = Asistencia.objects.filter(alumno_id=alumno_id)
+        else:
+            asistencias = Asistencia.objects.all()
+
+        serializer = AsistenciaSerializer(asistencias, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        # Procesa la actualización de asistencia
+        try:
+            alumno_id = request.data.get('alumno')
+            nombre = request.data.get('nombre')
+            fecha = request.data.get('fecha')
+            presente = request.data.get('presente')
+
+            if not alumno_id or not nombre:
+                return Response({'error': 'Alumno y Nombre son campos obligatorios.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            alumno = alumnoMode.objects.get(id=alumno_id)
+            materia = materias.objects.get(nombre=nombre)
+
+            asistencia = Asistencia.objects.create(
+                alumno=alumno,
+                nombre=materia,
+                fecha=fecha,
+                presente=presente
+            )
+            serializer = AsistenciaSerializer(asistencia)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
