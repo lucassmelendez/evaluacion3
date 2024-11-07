@@ -11,10 +11,10 @@ import { AsistenciaCurso } from 'src/app/model/materias';
   providedIn: 'root'
 })
 export class CrudAPIService {
-  private rutaApiAlumno = "http://127.0.0.1:8000/api/alumno/";
-  private rutaIncrementarAsistencia = "http://127.0.0.1:8000/api/incrementar_asistencia/";
-  private rutaAsistenciasPorMateria = "http://127.0.0.1:8000/api/asistencias_por_materia/";
-  private apiUrl = 'http://127.0.0.1:8000/api';
+  private rutaApiAlumno = "https://cartadesuicidio.pythonanywhere.com/api/alumno/";
+  private rutaIncrementarAsistencia = "https://cartadesuicidio.pythonanywhere.com/api/incrementar_asistencia/";
+  private rutaAsistenciasPorMateria = "https://cartadesuicidio.pythonanywhere.com/api/asistencias_por_materia/";
+  private apiUrl = 'https://cartadesuicidio.pythonanywhere.com/api';
 
   constructor(private http: HttpClient, private firestore: AngularFirestore) {}
 
