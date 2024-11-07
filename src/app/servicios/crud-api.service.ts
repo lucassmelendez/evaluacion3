@@ -12,7 +12,6 @@ import { AsistenciaCurso } from 'src/app/model/materias';
 })
 export class CrudAPIService {
   private rutaApiAlumno = "http://127.0.0.1:8000/api/alumno/";
-  private rutaApiAsist = "http://127.0.0.1:8000/api/asistencia/";
   private rutaIncrementarAsistencia = "http://127.0.0.1:8000/api/incrementar_asistencia/";
   private rutaAsistenciasPorMateria = "http://127.0.0.1:8000/api/asistencias_por_materia/";
   private apiUrl = 'http://127.0.0.1:8000/api';

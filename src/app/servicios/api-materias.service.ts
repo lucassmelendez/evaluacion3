@@ -22,8 +22,9 @@ export class ApiMateriasService {
     return this.http.get<MateriaCurso>(`${this.apiUrl}${materiaId}/`); // Usa apiUrl aquí también
   }
 
-  actualizarAsistencia(materiaData: { nombre: string; asistencias: AsistenciaCurso[]; correo_profe: string; totalClases: number }) {
-    return this.http.post('http://127.0.0.1:8000/api/materias/', materiaData);
+  actualizarAsistencia(asistenciaData: any): Observable<any> {
+    return this.http.post(`${this.api}/asistencias/`, asistenciaData);
   }
+
   
 }
