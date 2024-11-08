@@ -1,11 +1,11 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { Observable } from 'rxjs';
 import { Persona } from '../model/Persona';
 import { Alumno } from '../model/alumno';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { Observable } from 'rxjs';
 import { Profesor } from '../model/profesor';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -154,7 +154,7 @@ export class PersonasService {
   }
   async guardarAlumnoDjango(alumno: Alumno): Promise<void> {
     try {
-      const djangoUrl = 'https://registrappp.pythonanywhere.com/api/guardar-alumno/'; // Cambia esto a tu URL de Django
+      const djangoUrl = 'http://127.0.0.1:8000/api/guardar-alumno/'; // Cambia esto a tu URL de Django
       await this.http.post(djangoUrl, alumno).toPromise();
       console.log("Alumno guardado en Django correctamente");
     } catch (error) {
