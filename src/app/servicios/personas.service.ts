@@ -154,7 +154,7 @@ export class PersonasService {
   }
   async guardarAlumnoDjango(alumno: Alumno): Promise<void> {
     try {
-      const djangoUrl = 'http://127.0.0.1:8000/api/guardar-alumno/'; // Cambia esto a tu URL de Django
+      const djangoUrl = 'https://appregistr.pythonanywhere.com/api/guardar-alumno/'; // Cambia esto a tu URL de Django
       await this.http.post(djangoUrl, alumno).toPromise();
       console.log("Alumno guardado en Django correctamente");
     } catch (error) {
