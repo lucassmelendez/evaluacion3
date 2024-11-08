@@ -11,7 +11,7 @@ from .views import (
     IncrementarAsistenciaView,
     guardar_alumno,
     generar_pdf_alumnos,
-    RegistrarAsistenciaView,
+    asistencias_por_materia,
 )
 
 urlpatterns = [
@@ -23,6 +23,7 @@ urlpatterns = [
     path('api/incrementar_asistencia/', IncrementarAsistenciaView.as_view(), name='incrementar-asistencia'),
     url(r'^api/alumno/pdf/$', generar_pdf_alumnos, name='generar-pdf-alumnos'),
     path('api/guardar-alumno/', guardar_alumno, name='guardar_alumno'),
+    path('api/asistencias_por_materia/', asistencias_por_materia, name='asistencias_por_materia'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

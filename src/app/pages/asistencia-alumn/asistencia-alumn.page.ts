@@ -1,3 +1,4 @@
+// asistencia-alumn.page.ts
 import { Component, OnInit } from '@angular/core';
 import { AlertController, NavController } from '@ionic/angular';
 import { ClaseService } from 'src/app/servicios/clase.service';
@@ -14,9 +15,8 @@ import { ApiMateriasService } from 'src/app/servicios/api-materias.service';
 })
 export class AsistenciaAlumnPage implements OnInit {
   students: AlumnoConPresente[] = [];
-  materiaId: number;
-  materiaSeleccionada: MateriaCurso[] = []; // Representa la materia seleccionada
-  correoProfesor: string | null = ''; // Correo del profesor logueado
+  materiaSeleccionada: MateriaCurso[] = [];
+  correoProfesor: string | null = '';
   materiasDelProfesor: MateriaCurso[] = [];
 
   constructor(
@@ -31,7 +31,7 @@ export class AsistenciaAlumnPage implements OnInit {
   ngOnInit() {
     this.loadAlumnos();
 
-    // Suscribirse a los correos escaneados
+    // Suscribirse a los correos escaneados y marcar los presentes
     this.asistenciaService.correosEscaneados$.subscribe((correosEscaneados) => {
       this.marcarPresentes(correosEscaneados);
     });
@@ -79,11 +79,9 @@ export class AsistenciaAlumnPage implements OnInit {
   }
 
   async confirmarAsistencia() {
-    // Cargar la materia seleccionada desde localStorage
     const materiasGuardadas = localStorage.getItem('materiasDelProfesor');
     this.materiaSeleccionada = materiasGuardadas ? JSON.parse(materiasGuardadas) : [];
   
-    // Registrar la asistencia de los alumnos seleccionados
     for (const student of this.students) {
       if (student.presente) {
         const asistenciaData = {
@@ -97,13 +95,9 @@ export class AsistenciaAlumnPage implements OnInit {
         try {
           console.log(asistenciaData);
           
-          // Llamada a la API para registrar la asistencia de un alumno
-          await this.apiMateriasService.actualizarAsistencia(asistenciaData).toPromise(); // Asegúrate de que la URL aquí coincida con /api/asistencia/
-  
-          // Incrementar el total de clases después de registrar todas las asistencias
+          await this.apiMateriasService.actualizarAsistencia(asistenciaData).toPromise();
           this.claseService.incrementarClases();
   
-          // Mostrar alerta de éxito
           const alert = await this.alertController.create({
             message: 'Asistencia registrada exitosamente',
             buttons: ['OK'],
@@ -115,10 +109,8 @@ export class AsistenciaAlumnPage implements OnInit {
       }
     }
   
-    // Navegar a la página de inicio después de procesar todas las asistencias
     this.navCtrl.navigateForward(['/home-profe']);
-}
-
+  }
 
   marcarPresentes(correosEscaneados: string[]) {
     for (const student of this.students) {
