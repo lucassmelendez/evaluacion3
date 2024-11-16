@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NavController } from '@ionic/angular'; // Importamos NavController
 import { CrudAPIService } from 'src/app/servicios/crud-api.service';
 
 @Component({
@@ -7,26 +8,23 @@ import { CrudAPIService } from 'src/app/servicios/crud-api.service';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit {
-
-  usuario: string = '';
-
-  constructor(private crud:CrudAPIService) {}
+  constructor(private navCtrl: NavController) {} // Inyectamos NavController
 
   ngOnInit(): void {
-    const x = localStorage.getItem("usuario");
-    this.usuario = x ?? '';
+    setTimeout(() => {
+      this.redirectBasedOnUserType();
+    }, 4500);
   }
 
-  capitalizeFirstLetter(str: string): string {
-    if (!str) return '';
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-  }
+  redirectBasedOnUserType() {
+    const tipoUsuario = localStorage.getItem('tipoUsuario');
 
-  recuperaralumno(){
-    this.crud.getAlumno().subscribe(
-      (resp)=>{
-        console.log(resp)
-      }
-    ) 
+    if (tipoUsuario === 'alumno') {
+      this.navCtrl.navigateForward('/home-alumno');
+    } else if (tipoUsuario === 'profesor') {
+      this.navCtrl.navigateForward('/home-profe');
+    } else {
+      this.navCtrl.navigateForward('/login');
+    }
   }
 }

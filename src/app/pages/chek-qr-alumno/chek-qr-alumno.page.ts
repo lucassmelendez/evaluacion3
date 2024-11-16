@@ -25,15 +25,22 @@ export class ChekQRAlumnoPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Verificar si el escáner de código de barras es compatible
     BarcodeScanner.isSupported().then((result) => {
       this.isSupported = result.supported;
     });
+
+    // Solicitar permisos para la ubicación
+    this.requestLocationPermission();
   }
 
   async scan(): Promise<void> {
     const granted = await this.requestPermissions();
     if (!granted) {
-      this.presentAlert('Permiso Denegado', 'Por favor establezca permisos para el uso de barcode scanner.');
+      this.presentAlert(
+        'Permiso Denegado',
+        'Por favor establezca permisos para el uso de barcode scanner.'
+      );
       return;
     }
 
@@ -54,6 +61,18 @@ export class ChekQRAlumnoPage implements OnInit {
   async requestPermissions(): Promise<boolean> {
     const { camera } = await BarcodeScanner.requestPermissions();
     return camera === 'granted' || camera === 'limited';
+  }
+
+  async requestLocationPermission(): Promise<void> {
+    try {
+      const permission = await Geolocation.requestPermissions();
+      if (permission.location !== 'granted') {
+        this.presentAlert('Permiso Denegado', 'Por favor, permita el acceso a la ubicación.');
+      }
+    } catch (error) {
+      console.error('Error al solicitar permisos de ubicación:', error);
+      this.presentAlert('Error', 'No se pudo solicitar el permiso de ubicación.');
+    }
   }
 
   async obtenerUbicacion(): Promise<void> {
