@@ -62,6 +62,7 @@ export class ChekQRAlumnoPage implements OnInit {
     const { camera } = await BarcodeScanner.requestPermissions();
     return camera === 'granted' || camera === 'limited';
   }
+  
 
   async requestLocationPermission(): Promise<void> {
     try {
