@@ -1,9 +1,10 @@
 // chek-qr-alumno.page.ts
 import { Component, OnInit } from '@angular/core';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
-import { AlertController } from '@ionic/angular';
+import { AlertController , NavController} from '@ionic/angular';
 import { Geolocation } from '@capacitor/geolocation';
 import { AsistenciaService } from 'src/app/servicios/asistencia.service';
+
 
 @Component({
   selector: 'app-chek-qr-alumno',
@@ -21,7 +22,8 @@ export class ChekQRAlumnoPage implements OnInit {
 
   constructor(
     private alertController: AlertController,
-    private asistenciaService: AsistenciaService
+    private asistenciaService: AsistenciaService,
+    private navCtrl: NavController,
   ) {}
 
   ngOnInit() {
@@ -53,6 +55,7 @@ export class ChekQRAlumnoPage implements OnInit {
     await this.obtenerUbicacion();
     if (this.isDentroDelRango()) {
       this.presentAlert('Ubicación Correcta', 'Estás dentro del edificio de DuocUC');
+      this.navCtrl.navigateForward(['/check-alumn']);
     } else {
       this.presentAlert('Fuera de Rango', 'Estás fuera del rango del edificio de DuocUC.');
     }
