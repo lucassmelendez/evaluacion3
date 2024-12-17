@@ -32,7 +32,7 @@ export class CrudAPIService {
   }
 
   getMateriasConAsistencias(): Observable<MateriaCurso[]> {
-    return this.http.get<MateriaCurso[]>(`${this.apiUrl}/asistencias_por_materia`);
+    return this.http.get<MateriaCurso[]>(this.rutaAsistenciasPorMateria);
   }
 
   // Métodos de interacción con Firestore

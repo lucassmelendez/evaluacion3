@@ -8,14 +8,10 @@
 <ion-content>
   <ion-list>
     <ion-item *ngFor="let materia of materias">
-      <h3>{{ materia.nombre }}</h3>
-      <div *ngIf="materia.asistenciasPorAlumno && materia.asistenciasPorAlumno.length > 0">
-        <p>Días Presente: {{ getAttendanceCount(materia.asistenciasPorAlumno) }}</p>
-        <p>Porcentaje de Asistencia: {{ getAttendancePercentage(materia.asistenciasPorAlumno) }}%</p>
-      </div>
-      <p *ngIf="materia.asistenciasPorAlumno && materia.asistenciasPorAlumno.length === 0">
-        No hay asistencias registradas.
-      </p>
+      <ion-label>
+        <h2>{{ materia.nombre }}</h2>
+        <p>Asistencia: {{ materia.asistenciaAlumno }} días</p>
+      </ion-label>
     </ion-item>
   </ion-list>
 </ion-content>

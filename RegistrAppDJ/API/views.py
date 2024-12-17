@@ -15,6 +15,7 @@ from .models import Asistencia, alumno as alumnoMode, materias
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from django.http import JsonResponse
 
 # Create your views here.
 class UsuarioViewSet(generics.ListCreateAPIView):
@@ -191,7 +192,7 @@ def asistencias_por_materia(request):
             asistencia_count = alumno_asistencias.count()
             if asistencia_count > 0:
                 asistencia_info["asistencias"].append({
-                    "alumno_id": alumno_obj.id,
+                    "alumno": alumno_obj.id,
                     "nombre": f"{alumno_obj.nombre} {alumno_obj.apellido}",
                     "asistencia": asistencia_count
                 })
@@ -264,3 +265,11 @@ class AsistenciaListView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+def get_alumno_id(request, email):
+    try:
+        # Buscar el alumno por correo
+        alumno = alumno.objects.get(email=email)
+        return JsonResponse({"alumnoId": alumno.id})
+    except alumno.DoesNotExist:
+        return JsonResponse({"error": "Alumno no encontrado"}, status=404)

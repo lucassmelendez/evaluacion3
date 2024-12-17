@@ -8,7 +8,7 @@ export interface MateriaCurso {
 }
 
 export interface AsistenciaCurso {
-    alumno: number;
+    alumno_id: number;
     nombre: MateriaCurso; // Cambiamos el nombre aquí
     asistencia: boolean;
     fecha: string;

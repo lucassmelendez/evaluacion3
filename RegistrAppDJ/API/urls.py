@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^api/alumno/pdf/$', generar_pdf_alumnos, name='generar-pdf-alumnos'),
     path('api/guardar-alumno/', guardar_alumno, name='guardar_alumno'),
     path('api/asistencias_por_materia/', asistencias_por_materia, name='asistencias_por_materia'),
+    path('api/alumno-id/<str:email>/', views.get_alumno_id, name='get_alumno_id'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
